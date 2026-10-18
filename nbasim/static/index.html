@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Courtside — NBA simulation lab</title>
+  <link rel="stylesheet" href="/style.css"><script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="/" aria-label="Courtside home"><span class="brand-icon">◒</span> COURTSIDE <span class="brand-sub">NBA SIMULATION LAB</span></a><span class="version">MODEL 01 <span class="status-dot"></span></span></header>
+  <main>
+    <div class="eyebrow">A THOUSAND WAYS THE GAME COULD GO</div>
+    <section class="intro"><div><h1>The week, <em>played out.</em></h1><p>Every matchup. 1,000 simulations. A clearer view of what could happen.</p></div><div class="intro-note"><span>PROBABILITIES, NOT PROMISES</span><p>A projected score is an average outcome.<br>The game still has to be played.</p></div></section>
+    <section class="toolbar" aria-label="Simulation controls">
+      <div class="mode-switch"><button id="demo" class="selected" aria-pressed="true">Historical replay</button><button id="live" aria-pressed="false">Live week</button></div>
+      <label class="date-label">START DATE <input id="week" type="date" value="2015-04-06" required></label>
+      <label class="seed-label">SEED <input id="seed" type="number" min="0" max="4294967295" value="42"></label>
+      <button id="run" class="primary">Run 1,000 simulations <span>↗</span></button>
+    </section>
+    <div class="data-actions"><label class="file-button">↑ Import dataset JSON<input id="dataset-file" type="file" accept=".json,application/json"></label><label class="file-button">↑ Import odds CSV<input id="odds-file" type="file" accept=".csv,text/csv"></label><button id="clear-odds" hidden>Clear odds</button><button id="download-dataset">↓ Dataset template</button><span id="odds-label">No betting lines loaded</span></div>
+    <div id="notice" class="notice" role="status">Loading historical replay…</div>
+    <div id="error" class="error" role="alert" hidden></div>
+    <section id="summary" class="summary" aria-label="Weekly summary"></section>
+    <section class="matchups-section">
+      <div class="section-heading"><div><span class="eyebrow">THE MATCHUPS</span><h2 id="week-title">Your weekly forecast</h2></div><div class="list-actions"><label class="sr-only" for="search">Filter by team</label><input id="search" type="search" placeholder="Find a team…"><button id="export" disabled>Export results ↓</button></div></div>
+      <div class="list-meta"><span id="game-count"></span><span>SELECT A GAME TO EXPLORE THE DISTRIBUTION</span></div>
+      <div id="games" class="games"></div>
+      <div id="empty" class="empty" hidden>No games match this selection.</div>
+    </section>
+    <section class="method-grid">
+      <article class="method"><span class="eyebrow">BEHIND THE NUMBERS</span><h2>A model you can inspect.</h2><p>Recent results shape team offense and defense, adjusted for opponents and home court. A rest adjustment and correlated score variation turn those estimates into 1,000 possible games.</p><details><summary>Model assumptions & limitations</summary><ul id="assumptions"></ul><p>Scores are not possession-based efficiency ratings. Injuries, rotations, travel, and roster changes are not included in this first model. Odds never determine the simulated scores.</p></details></article>
+      <article class="method evaluation"><span class="eyebrow">CHECK THE TRACK RECORD</span><h2>How did it hold up?</h2><p>Replay six historical weeks, fitting only on games that happened before each week. Compare probabilities with actual results and a simple baseline.</p><button id="backtest">Run historical backtest ↗</button><div id="backtest-result" aria-live="polite"></div></article>
+    </section>
+    <footer><span>COURTSIDE / NBA SIMULATION LAB</span><p id="source">Historical data: FiveThirtyEight, CC BY 4.0.</p><span>BUILT FOR EXPLORATION</span></footer>
+  </main>
+  <dialog id="detail"><div class="dialog-top"><span class="eyebrow">MATCHUP DEEP DIVE</span><button id="close-detail" aria-label="Close matchup details">✕</button></div><div id="detail-content"></div></dialog>
+</body>
+</html>

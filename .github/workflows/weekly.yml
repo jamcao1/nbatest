@@ -1,0 +1,47 @@
+name: Weekly NBA simulations
+
+on:
+  schedule:
+    - cron: '0 12 * * 1'
+  workflow_dispatch:
+    inputs:
+      week:
+        description: 'Optional forecast start (YYYY-MM-DD); defaults to today in New York'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: weekly-nba-simulation
+  cancel-in-progress: false
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate the model and application
+        run: python -m unittest discover -s tests -v
+      - name: Fetch public NBA data and simulate the coming week
+        env:
+          NBA_WEEK: ${{ inputs.week }}
+        run: |
+          if [ -n "$NBA_WEEK" ]; then
+            python -m nbasim simulate --live --week "$NBA_WEEK" --output reports/weekly.json --markdown reports/weekly.md
+          else
+            python -m nbasim simulate --live --output reports/weekly.json --markdown reports/weekly.md
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nba-weekly-simulations
+          path: |
+            reports/weekly.json
+            reports/weekly.md
+          if-no-files-found: error
+          retention-days: 30
