@@ -3,6 +3,7 @@ import json
 import math
 import unittest
 from datetime import datetime, timezone
+from unittest.mock import patch
 
 from nbasim.data import ROOT, csv_games, demo_dataset, parse_odds, validate_dataset
 from nbasim.model import SIMULATIONS, backtest, fit, implied, report, simulate
@@ -32,6 +33,30 @@ class ModelTests(unittest.TestCase):
         c = simulate(self.game, self.model, self.dataset['schedule'], 11)
         self.assertEqual(a, b)
         self.assertNotEqual(a['margin_distribution'], c['margin_distribution'])
+
+    def test_margin_chart_categories_match_exact_winning_margins(self):
+        game = {**self.game, 'neutral': True}
+        model = copy.deepcopy(self.model)
+        model['league'] = 100
+        model['attack'] = dict.fromkeys(model['attack'], 0)
+        model['concede'] = dict.fromkeys(model['concede'], 0)
+        model['profiles'] = {}
+        cases = [(-30, 'Away 21+'), (-21, 'Away 21+'),
+                 (-20, 'Away 11–20'), (-11, 'Away 11–20'),
+                 (-10, 'Away 1–10'), (-1, 'Away 1–10'),
+                 (1, 'Home 1–10'), (10, 'Home 1–10'),
+                 (11, 'Home 11–20'), (20, 'Home 11–20'),
+                 (21, 'Home 21+'), (30, 'Home 21+')]
+        with patch('nbasim.model.random.Random') as random_class:
+            random_class.return_value.gauss.return_value = 0
+            for margin, label in cases:
+                with self.subTest(margin=margin):
+                    model['attack'][game['home']] = margin
+                    result = simulate(game, model, [])
+                    self.assertEqual(result['projected_margin'], margin)
+                    counts = {b['label']: b['count'] for b in result['margin_distribution']}
+                    self.assertEqual(counts[label], 1000)
+                    self.assertEqual(sum(counts.values()), 1000)
 
     def test_future_outcomes_cannot_change_training(self):
         future = {**self.game, 'home_score': 299, 'away_score': 1}

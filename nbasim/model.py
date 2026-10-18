@@ -143,8 +143,8 @@ def simulate(game, model, schedule, seed=42, odds=None):
     predicted_h = mean([x[0] for x in scores])
     predicted_a = mean([x[1] for x in scores])
     bins = []
-    for lo, hi, label in [(-math.inf, -20, 'Away 21+'), (-20, -10, 'Away 11–20'),
-                           (-10, 0, 'Away 1–10'), (0, 10, 'Home 1–10'),
+    for lo, hi, label in [(-math.inf, -21, 'Away 21+'), (-21, -11, 'Away 11–20'),
+                           (-11, -1, 'Away 1–10'), (0, 10, 'Home 1–10'),
                            (10, 20, 'Home 11–20'), (20, math.inf, 'Home 21+')]:
         bins.append({'label': label, 'count': sum(lo < m <= hi for m in margins)})
     result = {**game, 'simulations': SIMULATIONS, 'home_wins': home_wins,
