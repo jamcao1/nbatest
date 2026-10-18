@@ -35,20 +35,23 @@ jobs:
           NBA_WEEK: ${{ inputs.week }}
         run: |
           if [ -n "$NBA_WEEK" ]; then
-            python -m nbasim simulate --live --week "$NBA_WEEK" --output reports/weekly.json --markdown reports/weekly.md
+            python -m nbasim simulate --live --week "$NBA_WEEK" --output reports/weekly.json --markdown reports/weekly.md --dataset-output reports/inputs.json
           else
-            python -m nbasim simulate --live --output reports/weekly.json --markdown reports/weekly.md
+            python -m nbasim simulate --live --output reports/weekly.json --markdown reports/weekly.md --dataset-output reports/inputs.json
           fi
+      - name: Refresh roster context and experimental minutes
+        run: python -m nbasim.lineups --input reports/inputs.json --output reports/rosters.json --evaluation-file data/lineup_evaluation_2026.json --allow-unavailable
       - uses: actions/upload-artifact@v4
         with:
           name: nba-weekly-simulations
           path: |
             reports/weekly.json
             reports/weekly.md
+            reports/rosters.json
           if-no-files-found: error
           retention-days: 30
       - name: Build the public dashboard
-        run: python -m nbasim.site --report reports/weekly.json --output site
+        run: python -m nbasim.site --report reports/weekly.json --rosters reports/rosters.json --output site
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

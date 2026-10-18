@@ -20,6 +20,15 @@ def main():
         expect(page.locator('.data-actions')).to_be_hidden()
         assert 'PUBLISHED WEEKLY FORECAST' in page.locator('#notice').inner_text()
         assert 'Updated' in page.locator('#published-at').inner_text()
+        if page.locator('body').get_attribute('data-rosters') == 'true':
+            roster = page.request.get(base+'rosters.json').json()
+            expect(page.locator('#roster-controls')).to_be_visible()
+            expect(page.locator('#roster-team option')).to_have_count(30)
+            page.locator('#roster-team').select_option('BOS')
+            expect(page.locator('#roster-team-detail tbody tr')).to_have_count(len(roster['teams']['BOS']['players']))
+            expect(page.locator('#roster-status')).to_contain_text('not applied')
+            expect(page.locator('#roster-evaluation')).to_contain_text('277 held-out games')
+            expect(page.locator('#roster-evaluation')).to_contain_text('0.1877')
         page.locator('.game-card').first.click()
         expect(page.locator('dialog[open] .histogram rect')).to_have_count(6)
         assert 'No market lines were supplied' in page.locator('#detail-content').inner_text()
@@ -39,6 +48,14 @@ def main():
         page.set_viewport_size({'width':390,'height':844})
         assert page.evaluate('document.documentElement.scrollWidth <= window.innerWidth')
         page.screenshot(path='reports/pages-mobile.png')
+
+        if page.locator('body').get_attribute('data-rosters') == 'true':
+            page.route('**/rosters.json', lambda route: route.fulfill(json={'week_start': report['week_start'], 'status':'unavailable'}))
+            page.reload()
+            expect(page.locator('#roster-status')).to_contain_text('unavailable')
+            expect(page.locator('#roster-controls')).to_be_hidden()
+            expect(page.locator('.game-card')).to_have_count(len(report['games']))
+            page.unroute('**/rosters.json')
 
         # Past reports and failures must be explicit, rather than silently claiming current data.
         old = {**report,'week_start':'2015-04-06'}

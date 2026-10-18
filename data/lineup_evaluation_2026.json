@@ -1,0 +1,128 @@
+{
+  "start": "2026-03-09",
+  "end": "2026-04-19",
+  "games": 277,
+  "folds": [
+    {
+      "week_start": "2026-03-09",
+      "training_games": 122,
+      "test_games": 52
+    },
+    {
+      "week_start": "2026-03-16",
+      "training_games": 174,
+      "test_games": 54
+    },
+    {
+      "week_start": "2026-03-23",
+      "training_games": 228,
+      "test_games": 54
+    },
+    {
+      "week_start": "2026-03-30",
+      "training_games": 282,
+      "test_games": 52
+    },
+    {
+      "week_start": "2026-04-06",
+      "training_games": 334,
+      "test_games": 57
+    },
+    {
+      "week_start": "2026-04-13",
+      "training_games": 391,
+      "test_games": 8
+    }
+  ],
+  "baseline_brier": 0.1844519855595668,
+  "candidate_brier": 0.1876677942238267,
+  "baseline_margin_error": 12.232490974729242,
+  "candidate_margin_error": 12.367148014440433,
+  "improved_both_metrics": false,
+  "note": "Both models use the same complete-box-score subset. Development evaluation on one partial season. Historical rosters are inferred from the last pre-cutoff box score; transactions and injury reports are unavailable. This does not validate offseason trades, rookie projections, or future performance. Current rosters are never used in this backtest.",
+  "source": "ESPN public NBA scoreboard and event summary box scores; regular season and playoffs.",
+  "retrieved_at": "2026-10-18T16:02:05.738412+00:00",
+  "archive_sha256": "437c13253dee69e408698486dff6095a7242367cc228ede3f9f2700fec2913be",
+  "excluded_games": [
+    {
+      "id": "401810691",
+      "date": "2026-02-24",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401810717",
+      "date": "2026-02-27",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401810725",
+      "date": "2026-03-01",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401810729",
+      "date": "2026-03-01",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401810744",
+      "date": "2026-03-03",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401810760",
+      "date": "2026-03-05",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401810785",
+      "date": "2026-03-08",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401810837",
+      "date": "2026-03-15",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401810996",
+      "date": "2026-04-05",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401811009",
+      "date": "2026-04-07",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401869402",
+      "date": "2026-04-30",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "401871334",
+      "date": "2026-05-07",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "401871335",
+      "date": "2026-05-09",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401871162",
+      "date": "2026-05-10",
+      "reason": "could not convert string to float: '--'"
+    },
+    {
+      "id": "401871337",
+      "date": "2026-05-13",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "401873343",
+      "date": "2026-05-23",
+      "reason": "HTTP Error 404: Not Found"
+    }
+  ]
+}

@@ -22,6 +22,7 @@ def main():
     run.add_argument('--seed', type=int, default=42)
     run.add_argument('--odds', type=Path)
     run.add_argument('--output', type=Path)
+    run.add_argument('--dataset-output', type=Path, help='Save validated inputs for optional player-roster analysis')
     run.add_argument('--markdown', type=Path, help='Also save a readable weekly analysis report')
     test = sub.add_parser('backtest')
     test.add_argument('--start', default='2015-03-02')
@@ -44,6 +45,9 @@ def main():
             else:
                 dataset = demo_dataset(args.week or '2015-04-06')
             result = report(dataset, args.seed, args.odds.read_text() if args.odds else '')
+            if args.dataset_output:
+                args.dataset_output.parent.mkdir(parents=True, exist_ok=True)
+                args.dataset_output.write_text(json.dumps(validate_dataset(dataset), indent=2, allow_nan=False) + '\n')
             if args.markdown:
                 args.markdown.parent.mkdir(parents=True, exist_ok=True)
                 temporary = args.markdown.with_suffix(args.markdown.suffix + '.tmp')

@@ -1,7 +1,7 @@
 'use strict';
 const $ = id => document.getElementById(id);
 const PUBLISHED = document.body.dataset.mode === 'published';
-const state = {dataset: null, report: null, mode: 'historical replay', odds: '', busy: false};
+const state = {dataset: null, report: null, rosters: null, mode: 'historical replay', odds: '', busy: false};
 const pct = value => `${(value * 100).toFixed(1)}%`;
 const signed = value => `${value > 0 ? '+' : ''}${value.toFixed(1)}`;
 const fmtDate = value => new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', timeZone:'UTC'}).format(new Date(`${value}T12:00:00Z`));
@@ -140,7 +140,56 @@ function showDetail(g) {
     box.append(el('h3','','Market comparison'),table(['Metric','Value'],rows),el('p','',`${m.snapshots} uploaded snapshot(s). Latest: ${m.observed_at}. Movement reflects only your uploaded observations, not a complete market trend. Differences are not validated betting edges.`));
   } else box.append(el('h3','','Market comparison'),el('p','',PUBLISHED ? 'No market lines were supplied for this published report. No betting edge or market trend is claimed.' : 'Upload odds CSV to compare the model with spread, total, and no-vig moneyline probabilities. No lines or betting trends have been invented.'));
   g.warnings.forEach(w=>box.append(el('p','warning',w)));
+  if (state.rosters?.status === 'experimental_not_applied') {
+    const detail=el('details');detail.append(el('summary','','Current roster changes and estimated minutes'));
+    detail.append(el('p','warning','Roster research is not applied to the score or probability above. Minute estimates are not confirmed lineups.'));
+    for (const team of [g.away,g.home]) if(state.rosters.teams[team]) detail.append(rosterTeam(team));
+    box.append(detail);
+  }
   $('detail').showModal();
+}
+function rosterTeam(code) {
+  const team=state.rosters.teams[code], section=el('section','roster-team-detail');
+  section.append(el('h3','',code),el('p','',`Compared with the last observed lineup on ${team.comparison_date || 'an unknown date'}. Roster source timestamp: ${team.provider_timestamp}.`));
+  section.append(el('p','',`Now listed, absent from that lineup: ${team.added_since_last_box.join(', ') || 'None'}.`),el('p','',`In that lineup, absent from the current roster: ${team.absent_since_last_box.join(', ') || 'None'}.`));
+  section.append(el('p','warning',`${pct(team.unknown_minutes_share)} of estimated minutes belong to players with no observed performance history. These comparisons are not a verified list of trades or signings.`));
+  const wrap=el('div','roster-table');
+  wrap.append(table(['Player','Estimated MIN','Observed PPG','Availability snapshot'],team.players.map(p=>[
+    p.name+(p.unknown_player_prior?' · no history':''),p.minutes.toFixed(1),p.points_per_game===null?'Unknown':p.points_per_game.toFixed(1),
+    p.injuries?.length?p.injuries.map(i=>`${i.status} (${i.date || 'date unknown'})`).join('; '):'No report returned; availability unconfirmed'
+  ])));
+  section.append(wrap,el('p','',`PPG uses available games played through ${state.rosters.latest_training_result}, excluding DNPs. Estimated minutes use the last five box-score appearances including DNPs, normalized to 240 per team; displayed rounding can change the sum slightly. New players receive a generic allocation prior. Injury snapshots do not adjust minutes or confirm availability for a future game.`));
+  const source=el('a','','View roster source ↗');source.href=team.source;source.target='_blank';source.rel='noopener';section.append(source);
+  return section;
+}
+async function loadRosterContext() {
+  if (document.body.dataset.rosters !== 'true') return;
+  $('roster-context').hidden=false;
+  try {
+    const response=await fetch('./rosters.json',{cache:'no-store'});
+    if(!response.ok) throw new Error('Current roster context could not be loaded.');
+    const r=await response.json();
+    if(r.week_start!==state.report.week_start) throw new Error('Roster context belongs to a different forecast window.');
+    if(r.status!=='experimental_not_applied') throw new Error('Current roster context is unavailable. The predictions do not include roster adjustments.');
+    state.rosters=r;
+    const stamp=new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short',timeZone:'America/New_York'}).format(new Date(r.generated_at));
+    $('roster-status').textContent=`Roster snapshot ${stamp}, New York time. This research is not applied to the published predictions. Estimated rotations are not confirmed lineups. ${r.training_games} of ${r.requested_training_games} historical box scores passed validation.`;
+    $('roster-controls').hidden=false;
+    $('roster-team').replaceChildren(...Object.keys(r.teams).sort().map(t=>{const o=el('option','',t);o.value=t;return o;}));
+    const show=()=>$('roster-team-detail').replaceChildren(rosterTeam($('roster-team').value));
+    $('roster-team').onchange=show;show();
+    if(r.evaluation) {
+      const e=r.evaluation, box=$('roster-evaluation');
+      box.append(el('h3','','Did the experimental adjustment improve predictions?'),el('p','',`${e.games} held-out games · ${e.start} to ${e.end}. ${e.improved_both_metrics?'Both measured errors decreased, but broader validation is still required.':'It did not improve both measured errors, so the adjustment is not used.'}`));
+      box.append(table(['Metric · lower is better','Team baseline','Roster experiment'],[
+        ['Probability error (Brier)',e.baseline_brier.toFixed(4),e.candidate_brier.toFixed(4)],
+        ['Average margin error',e.baseline_margin_error.toFixed(2)+' pts',e.candidate_margin_error.toFixed(2)+' pts']
+      ]),el('p','',e.note));
+    }
+  } catch(error) {
+    state.rosters=null;$('roster-controls').hidden=true;$('roster-team-detail').replaceChildren();
+    $('roster-status').textContent=error.message;
+  }
 }
 function download(name, content, type='application/json') {const url=URL.createObjectURL(new Blob([content],{type}));const a=el('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 $('run').addEventListener('click',()=>run(state.mode !== 'imported'));
@@ -180,6 +229,7 @@ async function loadPublishedReport() {
     state.report = report;
     $('backtest').textContent = 'View historical backtest ↗';
     render();
+    await loadRosterContext();
   } catch(error) {
     $('notice').textContent = 'Published report unavailable.';
     showError(error);

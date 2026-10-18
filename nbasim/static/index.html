@@ -26,6 +26,12 @@
       <div id="games" class="games"></div>
       <div id="empty" class="empty" hidden>No games match this selection.</div>
     </section>
+    <section id="roster-context" class="method roster-context" hidden aria-labelledby="roster-title">
+      <span class="eyebrow">ROSTER CHANGES & RESEARCH</span><h2 id="roster-title">Who is on the team now?</h2>
+      <p id="roster-status">Loading current roster context…</p>
+      <div id="roster-controls" hidden><label for="roster-team">Choose a team </label><select id="roster-team"></select> <a href="./rosters.json" download>Download roster analysis ↓</a></div>
+      <div id="roster-team-detail"></div><div id="roster-evaluation"></div>
+    </section>
     <section class="method-grid">
       <article class="method"><span class="eyebrow">BEHIND THE NUMBERS</span><h2>A model you can inspect.</h2><p>Recent results shape team offense and defense, adjusted for opponents and home court. A rest adjustment and correlated score variation turn those estimates into 1,000 possible games.</p><details><summary>Model assumptions & limitations</summary><ul id="assumptions"></ul><p>Scores are not possession-based efficiency ratings. Injuries, rotations, travel, and roster changes are not included in this first model. Odds never determine the simulated scores.</p></details></article>
       <article class="method evaluation"><span class="eyebrow">CHECK THE TRACK RECORD</span><h2>How did it hold up?</h2><p>Replay six historical weeks, fitting only on games that happened before each week. Compare probabilities with actual results and a simple baseline.</p><button id="backtest">Run historical backtest ↗</button><div id="backtest-result" aria-live="polite"></div></article>

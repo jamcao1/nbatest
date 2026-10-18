@@ -47,6 +47,30 @@ class StaticSiteTests(unittest.TestCase):
                     build_site(source, site)
                 self.assertEqual((site/'index.html').read_text(),'previous working site')
 
+    def test_mismatched_or_infeasible_roster_cannot_replace_existing_site(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source, roster_path, site = root/'report.json', root/'roster.json', root/'site'
+            fixture = {**self.historical, 'mode': 'live public data'}
+            source.write_text(json.dumps(fixture))
+            site.mkdir()
+            (site/'index.html').write_text('previous working site')
+            roster = {'week_start': fixture['week_start'], 'generated_at': fixture['generated_at'],
+                      'status': 'experimental_not_applied',
+                      'teams': {str(i): {'players': [{'minutes':48} for _ in range(5)]} for i in range(30)}}
+            invalid = [{**roster, 'week_start': '1900-01-01'},
+                       {**roster, 'generated_at': '2015-01-01T00:00:00+00:00'},
+                       {**roster, 'teams': {str(i): {'players': [{'minutes':49} for _ in range(5)]} for i in range(30)}}]
+            for value in invalid:
+                roster_path.write_text(json.dumps(value))
+                with self.assertRaises(ValueError):
+                    build_site(source, site, roster_path)
+                self.assertEqual((site/'index.html').read_text(), 'previous working site')
+            roster_path.write_text(json.dumps({**roster, 'status': 'unavailable', 'teams': {}}))
+            build_site(source, site, roster_path)
+            self.assertIn('data-rosters="true"', (site/'index.html').read_text())
+            self.assertEqual(json.loads((site/'rosters.json').read_text())['status'], 'unavailable')
+
 
 if __name__ == '__main__':
     unittest.main()

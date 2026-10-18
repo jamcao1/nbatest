@@ -21,7 +21,40 @@ HTTPS access to `site.api.espn.com` is working in the managed cloud environment.
 
 ESPN's NBA scoreboard accepts individual dates, not date ranges. The adapter reads the season calendars at both ends of the requested window, then fetches game days individually, with at most four concurrent requests. If calendar metadata is unavailable, it scans individual dates instead. HTTP feed errors and connection failures are reported separately. Historical results are never substituted for a failed live request.
 
-The public ESPN scoreboard is an undocumented feed and can change. Only scheduled, unstarted regular-season and playoff games are selected; preseason, All-Star, postponed, and in-progress games are excluded. Final results from the preceding 240 days provide training data. No injuries or live betting odds are scraped. Empty upcoming slates are valid and produce an empty report; insufficient training data is an explicit error. Freshness is shown in the source and generation timestamps. Live responses are fetched anew on each run.
+The public ESPN scoreboard is an undocumented feed and can change. Only scheduled, unstarted regular-season and playoff games are selected; preseason, All-Star, postponed, and in-progress games are excluded. Final results from the preceding 240 days provide training data. No injuries or live betting odds affect the production predictions. The separate roster research panel displays source-provided injury snapshots without treating them as confirmed game availability. Empty upcoming slates are valid and produce an empty report; insufficient training data is an explicit error. Freshness is shown in the source and generation timestamps. Live responses are fetched anew on each run.
+
+## Current rosters and experimental rotations
+
+The published site's **Roster changes & research** section and each matchup's details now show current ESPN roster membership, changes relative to the team's last observed box-score roster, player points per game from the available history, provisional minutes, and dated injury status snapshots. Roster comparisons are **not a verified transaction log**: a player absent from a box score may have been on the team already. Roster data are refreshed with each weekly build, not continuously. A roster failure produces an explicit unavailable panel; it does not silently reuse an older snapshot or block the baseline report.
+
+The minute estimator uses each player's last five box-score appearances, including DNPs, scales each team's allocation to 240 minutes, and caps individuals at 48. Players with no history receive an eight-minute allocation prior before normalization. Displayed PPG excludes DNPs. These are **historical-role estimates, not confirmed or medically adjusted rotations**; rookies, role changes, injured players, and small samples remain major limitations. Current rosters include training-camp/two-way players as listed by the provider. Source timestamps and unknown-history minute shares are displayed.
+
+An experimental net-strength model fits final game margins to player minute shares using ridge regression (penalty 12, 60-day recency decay). Overtime minute shares are normalized to regulation length. For each team it compares the estimated current rotation with its historical weighted rotation; a proposed net-strength delta is split equally between offense and defense. These coefficients measure game-level associations, not isolated causal player impact. This experiment is **not applied to production predictions**.
+
+In six chronological holdouts from **March 9–April 19, 2026**, the candidate performed worse on both metrics:
+
+| Metric (lower is better) | Team baseline | Roster candidate |
+|---|---:|---:|
+| Brier probability error | 0.1845 | 0.1877 |
+| Mean absolute margin error | 12.23 points | 12.37 points |
+
+The comparison includes 277 held-out games. Both models use the same validated box-score subset. Of 486 fetched historical games, 470 reconciled player totals with final scores; 16 records with missing minutes or unavailable summaries were excluded and recorded. Historical rotations use only the last roster and player minutes observed **before** each weekly cutoff; current rosters and held-out participants/minutes never enter the fit or projections. These holdouts cover a partial season and do not validate offseason transactions or future performance. Reliable game-specific expected minutes and archived pregame injury/transaction data remain necessary for a stronger evaluation. No accuracy improvement is claimed.
+
+The normalized historical inputs, source retrieval date, exclusions, and SHA-256 are retained in `data/player_boxscores_2026.json.gz` and `data/lineup_evaluation_2026.json`. Reproduce the evaluation without network access:
+
+```bash
+python -m nbasim.lineups --backtest-input data/player_boxscores_2026.json.gz --output reports/lineup-evaluation.json
+```
+
+Refresh roster context and build the site:
+
+```bash
+python -m nbasim simulate --live --output reports/weekly.json --dataset-output reports/inputs.json
+python -m nbasim.lineups --input reports/inputs.json --output reports/rosters.json --evaluation-file data/lineup_evaluation_2026.json
+python -m nbasim.site --report reports/weekly.json --rosters reports/rosters.json --output site
+```
+
+The optional local `.cache/player-boxes` stores normalized completed box scores; remove it to refetch historical corrections. GitHub's weekly run starts with a fresh cache. `--allow-unavailable` writes an explicit unavailable result on a source failure and is used by the scheduled workflow. Current roster snapshots are never attached to a historical forecast date.
 
 ## Reports and weekly automation
 
