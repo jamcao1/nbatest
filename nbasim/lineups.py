@@ -15,7 +15,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from .data import day, validate_dataset
+from .data import ROOT, day, validate_dataset
 from .model import fit, mean, simulate
 from .provider import EASTERN
 
@@ -81,9 +81,11 @@ def parse_boxscore(payload, game):
     return {**game, 'players': teams, 'unidentified_dnp': unidentified_dnp}
 
 
-def collect_boxes(history, cache):
+def collect_boxes(history, cache, archive=None):
     cache = Path(cache)
     cache.mkdir(parents=True, exist_ok=True)
+    archived = json.loads(gzip.decompress(Path(archive).read_bytes())) if archive else None
+    archived_games = {g['id']: g for g in archived['games']} if archived else {}
     def get(game):
         if not game['id'].isdigit():
             raise ValueError('ESPN game IDs must be numeric.')
@@ -92,7 +94,13 @@ def collect_boxes(history, cache):
             cached = json.loads(path.read_text())
             if all(cached.get(k) == v for k, v in game.items()):
                 return cached
-        parsed = parse_boxscore(fetch_json(BASE + '/summary?event=' + game['id']), game)
+        try:
+            parsed = parse_boxscore(fetch_json(BASE + '/summary?event=' + game['id']), game)
+        except (ValueError, KeyError, TypeError, OSError) as exc:
+            previous = archived_games.get(game['id'])
+            if previous and all(previous.get(k) == v for k, v in game.items()):
+                return {**previous, 'archive_fallback': {'retrieved_at': archived['retrieved_at'], 'reason': str(exc)}}
+            raise
         path.write_text(json.dumps(parsed, allow_nan=False))
         return parsed
     def checked(game):
@@ -105,7 +113,12 @@ def collect_boxes(history, cache):
     rejected = [error for _, error in results if error]
     (cache / 'rejected.json').write_text(json.dumps(rejected, indent=2))
     accepted = [game for game, _ in results if game]
+    fallbacks = [{'id': g['id'], 'date': g['date'], **g['archive_fallback']}
+                 for g in accepted if g.get('archive_fallback')]
+    (cache / 'archive_fallbacks.json').write_text(json.dumps(fallbacks, indent=2))
     print(f'Player box-score coverage: {len(accepted)}/{len(history)}; {len(rejected)} rejected incomplete records.', flush=True)
+    if fallbacks:
+        print(f'Used {len(fallbacks)} explicitly dated archived box scores after fresh retrieval failed.', flush=True)
     if len(accepted) < .95 * len(history):
         raise ValueError('Fewer than 95% of training games have usable player box scores; inspect rejected.json.')
     return sorted(accepted, key=lambda g: (g['date'], g['id']))
@@ -334,6 +347,7 @@ def main():
     parser.add_argument('--evaluation-start', default='2026-03-09')
     parser.add_argument('--backtest-input', type=Path, help='Archived .json.gz player boxes for an offline evaluation')
     parser.add_argument('--evaluation-file', type=Path, help='Previously computed evaluation to include with current rosters')
+    parser.add_argument('--no-archive-fallback', action='store_true', help='Do not reuse the bundled dated box scores when fresh retrieval fails')
     parser.add_argument('--allow-unavailable', action='store_true', help='Write an explicit unavailable status on roster feed failure')
     args = parser.parse_args()
     if args.backtest_input:
@@ -348,10 +362,12 @@ def main():
         try:
             if day(dataset['week_start']) < datetime.now(EASTERN).date():
                 raise ValueError('Current roster snapshots cannot describe a historical forecast.')
-            boxes = collect_boxes(dataset['history'], args.cache)
+            archive = None if args.no_archive_fallback else ROOT/'data/player_boxscores_2026.json.gz'
+            boxes = collect_boxes(dataset['history'], args.cache, archive)
             print(f'Validated {len(boxes)} complete player box scores.', flush=True)
             result = analyze(dataset, boxes, current_rosters())
             result['rejected_boxes'] = json.loads((args.cache / 'rejected.json').read_text())
+            result['archive_fallbacks'] = json.loads((args.cache / 'archive_fallbacks.json').read_text())
             result['requested_training_games'] = len(dataset['history'])
             if args.evaluation_file:
                 result['evaluation'] = json.loads(args.evaluation_file.read_text())
@@ -363,6 +379,8 @@ def main():
             result = {'status': 'unavailable', 'week_start': dataset['week_start'],
                       'generated_at': datetime.now(timezone.utc).isoformat(),
                       'reason': str(exc), 'teams': {}}
+            if (args.cache / 'rejected.json').exists():
+                result['rejected_boxes'] = json.loads((args.cache / 'rejected.json').read_text())
     else:
         parser.error('--input or --backtest-input is required')
     args.output.parent.mkdir(parents=True, exist_ok=True)

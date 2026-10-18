@@ -174,6 +174,7 @@ async function loadRosterContext() {
     state.rosters=r;
     const stamp=new Intl.DateTimeFormat('en-US',{dateStyle:'medium',timeStyle:'short',timeZone:'America/New_York'}).format(new Date(r.generated_at));
     $('roster-status').textContent=`Roster snapshot ${stamp}, New York time. This research is not applied to the published predictions. Estimated rotations are not confirmed lineups. ${r.training_games} of ${r.requested_training_games} historical box scores passed validation.`;
+    if(r.archive_fallbacks?.length) $('roster-status').textContent+=` ${r.archive_fallbacks.length} historical box scores use the dated archive retrieved ${r.archive_fallbacks[0].retrieved_at}; their fresh retrieval failed. Current rosters were fetched separately.`;
     $('roster-controls').hidden=false;
     $('roster-team').replaceChildren(...Object.keys(r.teams).sort().map(t=>{const o=el('option','',t);o.value=t;return o;}));
     const show=()=>$('roster-team-detail').replaceChildren(rosterTeam($('roster-team').value));

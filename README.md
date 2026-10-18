@@ -54,7 +54,7 @@ python -m nbasim.lineups --input reports/inputs.json --output reports/rosters.js
 python -m nbasim.site --report reports/weekly.json --rosters reports/rosters.json --output site
 ```
 
-The optional local `.cache/player-boxes` stores normalized completed box scores; remove it to refetch historical corrections. GitHub's weekly run starts with a fresh cache. `--allow-unavailable` writes an explicit unavailable result on a source failure and is used by the scheduled workflow. Current roster snapshots are never attached to a historical forecast date.
+The optional local `.cache/player-boxes` stores normalized completed box scores. GitHub's weekly run starts with a fresh cache and attempts fresh retrieval. If a historical box score is temporarily unavailable, the bundled dated archive can supply it only when its game ID, date, teams, venue flag, and final scores match the freshly retrieved scoreboard. Each fallback and its archive retrieval time is disclosed in the roster JSON and panel. New games and current rosters still require live retrieval. Remove the local cache and pass `--no-archive-fallback` to require fresh historical box scores exclusively. At least 95% of requested game boxes must be usable. `--allow-unavailable` writes an explicit unavailable result on a source failure and is used by the scheduled workflow. Current roster snapshots are never attached to a historical forecast date.
 
 ## Reports and weekly automation
 
