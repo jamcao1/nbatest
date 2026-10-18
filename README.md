@@ -25,6 +25,30 @@ The public ESPN scoreboard is an undocumented feed and can change. Only schedule
 
 ## Reports and weekly automation
 
+### Public website on GitHub Pages
+
+The same dashboard can be published as a static website. It opens the most recently generated live-data report, with team search, matchup details, score distributions, JSON downloads, readable analysis, and historical backtest results. The page shows when the report was generated and flags an expired forecast. It is a weekly snapshot, not a live scoreboard. New simulations and dataset/odds imports remain available in the Python app.
+
+Setup steps for this repository:
+
+1. Open **Settings → Pages** in `jamcao1/nbatest`.
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+3. Open **Actions → Weekly NBA simulations → Run workflow**, select `main`, and run it.
+4. Wait for both `simulate` and `deploy` jobs to finish successfully.
+5. Use the site URL shown in the `github-pages` deployment or the Pages settings page.
+
+After setup, the existing Monday workflow generates and publishes the next weekly report automatically. Pushes to `main` and manual runs also refresh it. A failed build does not replace the last successful deployment; the published date remains visible so stale data are not presented as current. Reports are generated in GitHub Actions; Pages needs no Python server or API credentials.
+
+Build the same site locally:
+
+```bash
+python -m nbasim.site --report reports/weekly.json --output site
+```
+
+Only the generated `site/` directory is published. It contains HTML, CSS, JavaScript, the weekly JSON/Markdown reports, and historical backtest results. Local configuration and credentials are not included.
+
+### Generate reports
+
 ```bash
 # Real historical replay, with outcomes from the target week withheld
 python -m nbasim simulate --output reports/demo.json

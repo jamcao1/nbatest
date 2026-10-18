@@ -1,6 +1,8 @@
 name: Weekly NBA simulations
 
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: '0 12 * * 1'
   workflow_dispatch:
@@ -45,3 +47,23 @@ jobs:
             reports/weekly.md
           if-no-files-found: error
           retention-days: 30
+      - name: Build the public dashboard
+        run: python -m nbasim.site --report reports/weekly.json --output site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: simulate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

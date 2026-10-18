@@ -1,5 +1,6 @@
 'use strict';
 const $ = id => document.getElementById(id);
+const PUBLISHED = document.body.dataset.mode === 'published';
 const state = {dataset: null, report: null, mode: 'historical replay', odds: '', busy: false};
 const pct = value => `${(value * 100).toFixed(1)}%`;
 const signed = value => `${value > 0 ? '+' : ''}${value.toFixed(1)}`;
@@ -8,6 +9,10 @@ function el(tag, cls, text) { const node = document.createElement(tag); if (cls)
 function showError(error) { $('error').textContent = error.message || String(error); $('error').hidden = false; }
 function clearError() { $('error').hidden = true; }
 async function api(path, body) {
+  if (PUBLISHED) {
+    if (path !== '/api/backtest' || body) throw new Error('New simulations and imports are available in the Python app. This website displays the published weekly report.');
+    path = './backtest.json';
+  }
   const response = await fetch(path, body ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)} : {});
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || 'The request failed.');
@@ -55,6 +60,15 @@ function render() {
   $('summary').replaceChildren(stat('GAMES ON THE SLATE', String(games.length), 'Seven-day forecast window'), stat('SIMULATED GAMES', (games.length*1000).toLocaleString(), '1,000 independent draws per matchup'), stat('STRONGEST FAVORITE', top ? top.favorite : '—', top ? `${top.away} at ${top.home}` : 'No upcoming games', top ? pct(top.favorite_probability) : ''), stat('TRAINING RESULTS', report.training_games.toLocaleString(), `Through ${report.latest_training_result}`));
   $('week-title').textContent = `Week of ${fmtDate(report.week_start)}, ${report.week_start.slice(0,4)}`;
   $('notice').textContent = report.mode === 'historical replay' ? 'HISTORICAL REPLAY · Real 2014–15 NBA data. These are past matchups, not current NBA predictions. Scores and results from the forecast week are withheld.' : `${report.mode.toUpperCase()} · Ratings use results before ${report.week_start}. Only scheduled, unstarted games are shown for the live feed.`;
+  if (PUBLISHED) {
+    const stamp = new Intl.DateTimeFormat('en-US', {dateStyle:'medium',timeStyle:'short',timeZone:'America/New_York'}).format(new Date(report.generated_at));
+    $('published-at').textContent = `Updated ${stamp} · New York time`;
+    const end = new Date(`${report.week_start}T12:00:00Z`); end.setUTCDate(end.getUTCDate()+6);
+    const today = new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    const expired = end.toISOString().slice(0,10) < today;
+    const staleTraining = games.some(g=>g.warnings.some(w=>w.includes('30 days old')));
+    $('notice').textContent = `${expired ? 'PAST FORECAST' : 'PUBLISHED WEEKLY FORECAST'} · Games shown were scheduled when this report was generated; this is not a live scoreboard. ${expired ? 'This report’s week has ended. Check the latest workflow run if a new report is missing. ' : ''}${staleTraining ? 'Training results are over 30 days old; offseason roster changes are not modeled.' : ''}`;
+  }
   $('source').textContent = report.source;
   $('assumptions').replaceChildren(...report.assumptions.map(x => el('li','',x)));
   $('export').disabled = false;
@@ -124,7 +138,7 @@ function showDetail(g) {
     if(m.home_spread_movement!==undefined) rows.push(['Uploaded home spread movement',signed(m.home_spread_movement)]);
     if(m.total_movement!==undefined) rows.push(['Uploaded total movement',signed(m.total_movement)]);
     box.append(el('h3','','Market comparison'),table(['Metric','Value'],rows),el('p','',`${m.snapshots} uploaded snapshot(s). Latest: ${m.observed_at}. Movement reflects only your uploaded observations, not a complete market trend. Differences are not validated betting edges.`));
-  } else box.append(el('h3','','Market comparison'),el('p','','Upload odds CSV to compare the model with spread, total, and no-vig moneyline probabilities. No lines or betting trends have been invented.'));
+  } else box.append(el('h3','','Market comparison'),el('p','',PUBLISHED ? 'No market lines were supplied for this published report. No betting edge or market trend is claimed.' : 'Upload odds CSV to compare the model with spread, total, and no-vig moneyline probabilities. No lines or betting trends have been invented.'));
   g.warnings.forEach(w=>box.append(el('p','warning',w)));
   $('detail').showModal();
 }
@@ -155,5 +169,20 @@ $('backtest').addEventListener('click',async()=>{const button=$('backtest');butt
   for(const [label,value] of [['Winner accuracy',pct(r.winner_accuracy)],['Brier score · lower is better',r.brier_score.toFixed(3)],['Baseline Brier score',r.home_rate_baseline_brier.toFixed(3)],['80% margin range coverage',pct(r.margin_80_coverage)]]){const d=el('div','',value);d.append(el('span','',label));grid.append(d);}
   box.replaceChildren(grid,el('p','',`${r.games} games · March 2–April 12, 2015. Margin error: ${r.margin_mae.toFixed(1)} points; total error: ${r.total_mae.toFixed(1)} points. ${r.note}`));
   const details=el('details'), summary=el('summary','','Probability calibration');details.append(summary,table(['Predicted home win bin','Games','Observed rate'],r.calibration.map(c=>[c.bin,c.games,c.actual_home_win_rate===null?'—':pct(c.actual_home_win_rate)])));box.append(details);
-}catch(error){showError(error);}finally{button.disabled=false;button.textContent='Run historical backtest ↗';}});
-run();
+}catch(error){showError(error);}finally{button.disabled=false;button.textContent=PUBLISHED?'View historical backtest ↗':'Run historical backtest ↗';}});
+async function loadPublishedReport() {
+  clearError();
+  try {
+    const response = await fetch('./weekly.json', {cache:'no-store'});
+    if (!response.ok) throw new Error('The weekly report could not be loaded. Please refresh or check the latest workflow run.');
+    const report = await response.json();
+    if (!Array.isArray(report.games) || report.simulations_per_game !== 1000) throw new Error('The published report has an unexpected format.');
+    state.report = report;
+    $('backtest').textContent = 'View historical backtest ↗';
+    render();
+  } catch(error) {
+    $('notice').textContent = 'Published report unavailable.';
+    showError(error);
+  }
+}
+if (PUBLISHED) loadPublishedReport(); else run();
