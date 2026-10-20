@@ -345,7 +345,7 @@ def evaluate(archive, count=40):
                 old[code] = [{'id': p['id'], 'name': p['name'], 'injuries': []} for p in g['players'].values() if p['team'] == code]
         for side in ('home', 'away'):
             team = target[side]; opponent = target['away' if side == 'home' else 'home']
-            projections = [project_player(p, team, opponent, side == 'home', target['venue']['id'], model)
+            projections = [project_player(p, team, opponent, None if target.get('neutral') else side == 'home', target['venue']['id'], model)
                            for p in rotation(old.get(team, []), model)]
             eligible = [p for p in projections if p['expected_points'] is not None]
             if not eligible:

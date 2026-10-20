@@ -62,6 +62,7 @@ function card(game,code,home){
     let projection;
     function draw(){
       if(!projection||projection.minutes!==minutes)projection=estimate(player,minutes);
+      subtitle.textContent=Math.abs(minutes-player.minutes)>.01?'Edited minutes scenario · team ranking unchanged':player.id===team.leader_id?'Projected scoring leader':'Player scoring profile';
       points.textContent=f(projection.points);range.textContent=`Model 80% range: ${projection.interval80.join('–')} points · uncalibrated`;
       metrics.forEach(x=>x.value.textContent=f(projection[x.key]));
       output.textContent=`${f(minutes)}${Math.abs(minutes-player.minutes)>.01?' · edited scenario':' · model estimate'}`;

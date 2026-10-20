@@ -30,8 +30,10 @@ def main():
         slider.fill('16')
         slider.dispatch_event('input')
         expect(first.locator('output')).to_contain_text('edited scenario')
+        expect(first.locator('.player-heading p')).to_contain_text('team ranking unchanged')
         assert float(first.locator('.scoring-number strong').inner_text()) < points
         first.get_by_role('button', name='Reset', exact=True).click()
+        expect(first.locator('.player-heading p')).to_contain_text('Projected scoring leader')
         assert float(first.locator('.scoring-number strong').inner_text()) == points
         first.get_by_role('button', name='Recorded shots', exact=True).click()
         assert first.locator('.shot-made').count() > 0
