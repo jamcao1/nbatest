@@ -11,7 +11,7 @@ from .model import backtest
 from .reporting import markdown
 
 
-def build_site(report_path, output, roster_path=None, pace_path=None):
+def build_site(report_path, output, roster_path=None, pace_path=None, player_path=None):
     report = json.loads(Path(report_path).read_text())
     if report.get('mode') != 'live public data' or report.get('simulations_per_game') != 1000:
         raise ValueError('The public site requires a live-data report with 1,000 simulations per game.')
@@ -21,6 +21,19 @@ def build_site(report_path, output, roster_path=None, pace_path=None):
            for g in report['games']):
         raise ValueError('Every published game must contain 1,000 decisive outcomes.')
     roster = json.loads(Path(roster_path).read_text()) if roster_path else None
+    players = json.loads(Path(player_path).read_text()) if player_path else None
+    if players is not None:
+        if players.get('status') not in ('experimental', 'unavailable'):
+            raise ValueError('Player research needs an explicit availability status.')
+        if players['status'] == 'experimental':
+            stamp, generated = datetime.fromisoformat(players['generated_at']), datetime.fromisoformat(report['generated_at'])
+            if (players.get('week_start') != report['week_start'] or stamp.tzinfo is None or generated.tzinfo is None
+                    or abs((stamp-generated).total_seconds()) > 86400):
+                raise ValueError('Player research must match the report week and be generated within a day.')
+            expected = {g['id']: g for g in report['games']}
+            if {g['id'] for g in players['games']} != set(expected) or any(
+                    any(g[k] != expected[g['id']][k] for k in ('date', 'home', 'away')) for g in players['games']):
+                raise ValueError('Player matchup identities must match the report.')
     if roster is not None:
         if roster.get('week_start') != report['week_start'] or roster.get('status') not in ('experimental_not_applied', 'unavailable'):
             raise ValueError('Roster context must match this forecast and disclose its experimental/unavailable status.')
@@ -75,6 +88,16 @@ def build_site(report_path, output, roster_path=None, pace_path=None):
         "'./live-model.mjs'", f"'./live-model.mjs?v={version(artifacts['live-model.mjs'])}'")
     artifacts['live.html'] = artifacts['live.html'].replace(
         'src="./live.js"', f'src="./live.js?v={version(artifacts["live.js"])}"')
+    for name in ('players.html', 'players.css', 'players.js', 'player-model.mjs'):
+        artifacts[name] = (static/name).read_text()
+    artifacts['players.js'] = artifacts['players.js'].replace(
+        "'./player-model.mjs'", f"'./player-model.mjs?v={version(artifacts['player-model.mjs'])}'")
+    artifacts['players.html'] = artifacts['players.html'].replace(
+        'src="./players.js"', f'src="./players.js?v={version(artifacts["players.js"])}"').replace(
+        'href="./players.css"', f'href="./players.css?v={version(artifacts["players.css"])}"')
+    artifacts['players.json'] = json.dumps(players, separators=(',', ':'), allow_nan=False) if players is not None else json.dumps(
+        {'status': 'unavailable', 'reason': 'Player research was not included in this build.', 'games': []})
+    artifacts['player-evaluation.json'] = (ROOT/'data/player_evaluation.json').read_text()
     artifacts['pace-priors.json'] = Path(pace_path or ROOT/'data/pace_priors.json').read_text()
     artifacts['pace-replay.json'] = (ROOT/'data/pace_replay.json').read_text()
     artifacts['pace-evaluation.json'] = (ROOT/'data/pace_evaluation.json').read_text()
@@ -89,9 +112,10 @@ def main():
     parser.add_argument('--output', type=Path, default=ROOT/'site')
     parser.add_argument('--rosters', type=Path, help='Optional dated experimental roster context')
     parser.add_argument('--pace', type=Path, help='Pace priors refreshed from completed games')
+    parser.add_argument('--players', type=Path, help='Dated player scoring and shot-location research')
     args = parser.parse_args()
     try:
-        output = build_site(args.report, args.output, args.rosters, args.pace)
+        output = build_site(args.report, args.output, args.rosters, args.pace, args.players)
         print(f'Built static website: {output}')
     except (ValueError, OSError) as exc:
         parser.exit(1, f'Error: {exc}\n')

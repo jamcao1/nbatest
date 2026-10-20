@@ -23,6 +23,29 @@ ESPN's NBA scoreboard accepts individual dates, not date ranges. The adapter rea
 
 The public ESPN scoreboard is an undocumented feed and can change. Only scheduled, unstarted regular-season and playoff games are selected; preseason, All-Star, postponed, and in-progress games are excluded. Final results from the preceding 240 days provide training data. No injuries or live betting odds affect the production predictions. The separate roster research panel displays source-provided injury snapshots without treating them as confirmed game availability. Empty upcoming slates are valid and produce an empty report; insufficient training data is an explicit error. Freshness is shown in the source and generation timestamps. Live responses are fetched anew on each run.
 
+## Player scoring atlas
+
+Open **Player scoring & shot maps** (`players.html`) or follow the link from a matchup. The page selects each team's **projected scoring leader**—highest expected points among its current, sufficiently observed roster members, not best overall player—and lets you inspect other players. It includes expected points, made/missed field goals, free throws, an interactive half-court zone view, actual historical made/missed shot locations, recent scoring, a minutes scenario slider, opponent/pace factors, venue splits, and sourced opening/latest game-line movement.
+
+The estimate covers **regulation only, conditional on playing the selected minutes**. It is not interchangeable with a sportsbook prop that includes overtime. Out players receive zero minutes and are excluded from leader selection. Other injury statuses remain conditional. A player needs three prior appearances and 60 historical minutes to be rated. Unknown players receive an eight-minute allocation weight when distributing the team's 240 minutes but no invented shooting profile. Rotations use up to ten observed appearances and are not coach-confirmed.
+
+Shooting uses up to twenty earlier appearances, a 45-day decay relative to the latest appearance, and twenty league-prior attempts per zone. Opponent zone accuracy is shrunk with fifty league-prior attempts and bounded to a ±10% adjustment. Matchup pace changes volume by at most ±10%. Home/away usage differences use 300 prior minutes and a ±5% cap. Exact-venue results are descriptive; they do not establish an arena effect. Player identity follows stable IDs across team changes, but new roles, particular defenders, shot quality, and offseason skill changes are not modeled.
+
+`data/player_shots_2026.json.gz` contains **466 validated games from February 22–June 13, 2026**, with five excluded summaries recorded explicitly. There are **77,368 mapped field-goal attempts out of 82,117**. ESPN coordinates use feet relative to the hoop at `(25, 0)`. Coordinates outside plausible bounds or inconsistent with stated distance are unlocated. A player's play-by-play must reconcile with their box-score two- and three-point totals; otherwise all their game locations are withheld while the box-score scoring remains available. The court shows up to 150 recent recorded locations; the table covers the full player sample. Expected-zone markers are schematic, not fabricated future shots.
+
+The model's 1,500 deterministic scoring draws use Poisson attempts, shared shot-volume variation, and binomial makes. The displayed 80% ranges are **uncalibrated** and exclude availability and minutes uncertainty. A chronological development replay on the last **40 archived games / 80 pregame-selected leaders** had **7.27 points mean absolute error**, versus **6.95** for a last-ten scoring-average baseline evaluated on the same selected players. Target-game participants and statistics do not enter the predictions. Historical rosters use each team's last earlier box score; overtime outcomes are normalized to 48 minutes. This experiment **did not beat the simpler baseline** and does not validate current trades, future scoring, prediction ranges, or profitability.
+
+Current roster membership/injuries and venue/game-line context are fetched during each report build. A failed context produces an unavailable matchup; a failed overall research job produces an explicitly unavailable player page without interrupting the other dashboards. Opening/latest quotes are dated retrieval snapshots, not a complete betting trend or betting-volume feed. Player prop prices are not supplied or invented. Stale dates remain visible. Shared player histories are stored once to reduce page payload; changing a chart or minutes scenario does not fetch new data.
+
+```bash
+python -m nbasim.players --input reports/inputs.json --rosters reports/rosters.json --output reports/players.json
+python -m nbasim.players --evaluate --output reports/player-evaluation.json
+python -m nbasim.site --report reports/weekly.json --rosters reports/rosters.json --pace reports/pace-priors.json --players reports/players.json --output site
+node --test tests/test_player_model.mjs
+# After serving the static site under /nbatest/:
+NBATEST_BASE_URL=http://127.0.0.1:8002/nbatest/ python tests/browser_players.py
+```
+
 ## Live pace and totals
 
 Open **Live pace & quarter totals** on the dashboard, or `live.html` in the Python app. The page fetches ESPN's current scoreboard and game summaries directly, refreshing the selected game every 30 seconds while visible. It pauses monitoring when the page is closed or hidden; it does not operate as a background alert service. The public feed can be delayed, corrected, or unavailable. No API key is required.

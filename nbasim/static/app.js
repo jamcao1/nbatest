@@ -125,6 +125,7 @@ function histogram(bins) {
 function showDetail(g) {
   const box=$('detail-content');box.replaceChildren(el('h2','',`${g.away} at ${g.home}`),el('p','',`${fmtDate(g.date)} · ${state.report.mode} · Seed ${state.report.seed}`),el('div','detail-score',`${g.projected_away_score.toFixed(1)} — ${g.projected_home_score.toFixed(1)}`),el('p','',`Average projected final score. ${g.favorite === 'Even' ? 'Neither team is favored.' : `${g.favorite} won ${Math.round(g.favorite_probability*1000)} of 1,000 simulations.`}`));
   const stats=el('div','detail-stats');
+  if(PUBLISHED){const link=el('a','live-link','Player scoring & court maps ↗');link.href=`./players.html?game=${encodeURIComponent(g.id)}`;box.append(link);}
   for (const [label,value] of [['Home win probability',pct(g.home_win_probability)],['Home margin · 80% range',g.margin_80_interval.map(signed).join(' to ')],['Total · 80% range',g.total_80_interval.join(' to ')]]) {const item=el('div');item.append(el('span','',label),document.createTextNode(value));stats.append(item);}
   box.append(stats,el('h3','','How the 1,000 games ended'),histogram(g.margin_distribution),el('p','',`Home win probability sampling interval (95%): ${g.home_probability_mc_95_interval.map(pct).join('–')}. This measures Monte Carlo sampling error, not uncertainty in the model or its assumptions.`));
   const f=g.factors;

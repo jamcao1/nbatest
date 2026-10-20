@@ -32,6 +32,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -v
           node --test tests/test_live_model.mjs
+          node --test tests/test_player_model.mjs
       - name: Fetch public NBA data and simulate the coming week
         env:
           NBA_WEEK: ${{ inputs.week }}
@@ -45,6 +46,8 @@ jobs:
         run: python -m nbasim.lineups --input reports/inputs.json --output reports/rosters.json --evaluation-file data/lineup_evaluation_2026.json --allow-unavailable
       - name: Update historical pace priors
         run: python -m nbasim.pace_data --input reports/inputs.json --archive data/pace_history_2026.json.gz --output reports/pace-priors.json
+      - name: Build dated player scoring and shot-location research
+        run: python -m nbasim.players --input reports/inputs.json --rosters reports/rosters.json --output reports/players.json --allow-unavailable
       - uses: actions/upload-artifact@v4
         with:
           name: nba-weekly-simulations
@@ -52,10 +55,11 @@ jobs:
             reports/weekly.json
             reports/weekly.md
             reports/rosters.json
+            reports/players.json
           if-no-files-found: error
           retention-days: 30
       - name: Build the public dashboard
-        run: python -m nbasim.site --report reports/weekly.json --rosters reports/rosters.json --pace reports/pace-priors.json --output site
+        run: python -m nbasim.site --report reports/weekly.json --rosters reports/rosters.json --pace reports/pace-priors.json --players reports/players.json --output site
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

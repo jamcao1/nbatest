@@ -48,10 +48,18 @@ class Handler(BaseHTTPRequestHandler):
                      '/live.html': ('live.html', 'text/html; charset=utf-8'),
                      '/live.js': ('live.js', 'text/javascript; charset=utf-8'),
                      '/live-model.mjs': ('live-model.mjs', 'text/javascript; charset=utf-8'),
+                     '/players.html': ('players.html', 'text/html; charset=utf-8'),
+                     '/players.css': ('players.css', 'text/css; charset=utf-8'),
+                     '/players.js': ('players.js', 'text/javascript; charset=utf-8'),
+                     '/player-model.mjs': ('player-model.mjs', 'text/javascript; charset=utf-8'),
                      '/app.js': ('app.js', 'text/javascript; charset=utf-8'),
                      '/style.css': ('style.css', 'text/css; charset=utf-8')}
             research = {'/pace-priors.json':'pace_priors.json', '/pace-replay.json':'pace_replay.json',
-                        '/pace-evaluation.json':'pace_evaluation.json'}
+                        '/pace-evaluation.json':'pace_evaluation.json', '/player-evaluation.json':'player_evaluation.json'}
+            if route.path == '/players.json':
+                path = ROOT/'reports/players.json'
+                return self.send(200, path.read_bytes() if path.exists() else
+                                 {'status': 'unavailable', 'reason': 'Generate reports/players.json first.', 'games': []})
             if route.path in research:
                 return self.send(200, (ROOT/'data'/research[route.path]).read_bytes())
             if route.path in files:

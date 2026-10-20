@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Courtside — Player scoring atlas</title><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./players.css"><script type="module" src="./players.js"></script></head>
+<body>
+<header class="topbar"><a class="brand" href="./">◒ COURTSIDE</a><nav><a href="./">Weekly forecast ↗</a><a href="./live.html">Live pace ↗</a></nav></header>
+<main>
+  <div class="eyebrow">PLAYER SCORING ATLAS · EXPERIMENTAL</div>
+  <section class="intro"><div><h1>Where the <em>points begin.</em></h1><p>Two teams. Their projected scoring leaders. The shots behind the numbers.</p></div></section>
+  <div class="atlas-controls"><label for="player-game">Choose a matchup</label><select id="player-game" disabled><option>Loading the slate…</option></select><button id="players-retry">Refresh report ↻</button></div>
+  <p id="players-status" role="status">Loading player research…</p><div id="players-error" class="error" role="alert" hidden></div>
+  <div id="players-notice" class="notice" hidden></div>
+  <section id="venue-context" class="venue-context" aria-label="Matchup and venue"></section>
+  <section id="player-cards" class="player-cards" aria-label="Team scoring leaders"></section>
+  <section class="research-grid">
+    <div class="method"><span class="eyebrow">THE MARKET SNAPSHOT</span><h2>What moved?</h2><div id="player-market"></div><p>Opening and latest available game quotes from the named provider. These do not show betting volume, every price change, or player props. Markets are context and do not determine the player estimates.</p></div>
+    <div class="method"><span class="eyebrow">CHECK THE MODEL</span><h2>Evidence before confidence.</h2><div id="player-evaluation"></div><p>Scoring ranges are simulated, conditional on the selected minutes, and have not been calibrated against future games. They exclude overtime and uncertainty about whether a player will suit up.</p></div>
+  </section>
+  <section class="method atlas-method"><details><summary>Data, definitions, and how the model works</summary><div id="player-method"></div>
+    <p>“Projected scoring leader” is the eligible player with the highest modeled points on that team. It is not a ranking of overall basketball ability. Players listed Out are excluded; other availability remains uncertain. Players with fewer than three appearances or 60 historical minutes are unrated.</p>
+    <p>Minutes use the last ten observed appearances, scaled across the current roster to 240 regulation minutes, capped at 48. Players without history receive an eight-minute allocation weight. They do not receive invented shooting profiles. Changing the minutes slider is an individual scenario and does not rebalance teammates.</p>
+    <p>Shot rates use up to twenty earlier appearances with a 45-day exponential decay relative to the latest appearance. Shooting accuracy is shrunk with twenty attempts of league zone history. Opponent accuracy is shrunk with fifty attempts, and its multiplier is capped at ±10%. Pace changes attempt volume by at most ±10%. Home/away attempt-rate differences are shrunk with 300 minutes and capped at ±5%. Exact-arena splits are descriptive only.</p>
+    <p>Each range uses 1,500 deterministic simulations with Poisson shot attempts, a shared scoring-volume fluctuation, and binomial makes. These simplifying assumptions omit specific defenders, plays, fatigue, shot difficulty, current rotations, and role changes after trades. No betting edge is established.</p>
+    <p>The court uses ESPN coordinates in feet relative to a basket at (25, 0). Implausible coordinates and distance mismatches are unlocated. Player shot logs must reconcile with box-score two- and three-point totals; otherwise those locations are withheld. Historical dots are real recorded attempts, never predicted future locations. Heaves beyond half court are counted in the table but not plotted.</p>
+  </details></section>
+  <footer><span>COURTSIDE / PLAYER RESEARCH</span><p>Public ESPN data · dated snapshots · regulation scenarios, not guaranteed outcomes.</p></footer>
+</main></body></html>

@@ -24,7 +24,8 @@ class StaticSiteTests(unittest.TestCase):
             build_site(source, site)
             self.assertEqual({p.name for p in site.iterdir()},
                              {'index.html','app.js','style.css','weekly.json','weekly.md','backtest.json','.nojekyll',
-                              'live.html','live.js','live-model.mjs','pace-priors.json','pace-replay.json','pace-evaluation.json'})
+                              'live.html','live.js','live-model.mjs','pace-priors.json','pace-replay.json','pace-evaluation.json',
+                              'players.html','players.css','players.js','player-model.mjs','players.json','player-evaluation.json'})
             html = (site/'index.html').read_text()
             self.assertIn('data-mode="published"', html)
             self.assertIn('href="./style.css"', html)
@@ -47,6 +48,24 @@ class StaticSiteTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     build_site(source, site)
                 self.assertEqual((site/'index.html').read_text(),'previous working site')
+
+    def test_mismatched_player_research_cannot_replace_existing_site(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixture = {**self.historical, 'mode': 'live public data'}
+            source, players, site = root/'input.json', root/'players.json', root/'site'
+            source.write_text(json.dumps(fixture))
+            site.mkdir()
+            (site/'index.html').write_text('previous working site')
+            data = {'status': 'experimental', 'week_start': fixture['week_start'],
+                    'generated_at': fixture['generated_at'], 'games': []}
+            players.write_text(json.dumps(data))
+            with self.assertRaises(ValueError):
+                build_site(source, site, player_path=players)
+            self.assertEqual((site/'index.html').read_text(), 'previous working site')
+            players.write_text(json.dumps({'status': 'unavailable', 'reason': 'Source failed', 'games': []}))
+            build_site(source, site, player_path=players)
+            self.assertEqual(json.loads((site/'players.json').read_text())['status'], 'unavailable')
 
     def test_mismatched_or_infeasible_roster_cannot_replace_existing_site(self):
         with tempfile.TemporaryDirectory() as directory:
