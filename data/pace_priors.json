@@ -1,0 +1,526 @@
+{
+  "generated_at": "2026-10-20T11:58:19.523243+00:00",
+  "source": "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary",
+  "archive_retrieved_at": null,
+  "games": 401,
+  "start": "2026-02-20",
+  "end": "2026-04-12",
+  "league": {
+    "pace": 101.74876913117336,
+    "ppp": 1.1344997199519693
+  },
+  "teams": {
+    "CLE": {
+      "games": 26,
+      "recent_games": 16,
+      "pace": 100.01343976777939,
+      "offense_ppp": 1.1835271406903525,
+      "defense_ppp": 1.1509705688590643,
+      "points_per_game": 118.84615384615384,
+      "combined_total": 234.42307692307693,
+      "pace_range": [
+        91.5,
+        111.68
+      ],
+      "above_league_pace_fraction": 0.34615384615384615,
+      "latest_result": "2026-04-12",
+      "pace_rank": 22,
+      "offense_rank": 4
+    },
+    "CHA": {
+      "games": 26,
+      "recent_games": 15,
+      "pace": 97.95153846153846,
+      "offense_ppp": 1.197216834070223,
+      "defense_ppp": 1.0809898144294274,
+      "points_per_game": 117.26923076923077,
+      "combined_total": 223.15384615384616,
+      "pace_range": [
+        91.38,
+        108.09999999999998
+      ],
+      "above_league_pace_fraction": 0.11538461538461539,
+      "latest_result": "2026-04-12",
+      "pace_rank": 28,
+      "offense_rank": 3
+    },
+    "IND": {
+      "games": 26,
+      "recent_games": 16,
+      "pace": 103.8253846153846,
+      "offense_ppp": 1.1117038222459306,
+      "defense_ppp": 1.1998696035503398,
+      "points_per_game": 115.42307692307692,
+      "combined_total": 240,
+      "pace_range": [
+        96.90000000000002,
+        112.92
+      ],
+      "above_league_pace_fraction": 0.6153846153846154,
+      "latest_result": "2026-04-12",
+      "pace_rank": 8,
+      "offense_rank": 21
+    },
+    "WSH": {
+      "games": 28,
+      "recent_games": 17,
+      "pace": 104.52517520215633,
+      "offense_ppp": 1.0899609220756232,
+      "defense_ppp": 1.2285037375924186,
+      "points_per_game": 114.35714285714286,
+      "combined_total": 243.25,
+      "pace_range": [
+        93.74000000000001,
+        119.86000000000001
+      ],
+      "above_league_pace_fraction": 0.6785714285714286,
+      "latest_result": "2026-04-12",
+      "pace_rank": 4,
+      "offense_rank": 26
+    },
+    "UTAH": {
+      "games": 26,
+      "recent_games": 16,
+      "pace": 105.91923076923077,
+      "offense_ppp": 1.0962634808816587,
+      "defense_ppp": 1.1914012854497258,
+      "points_per_game": 116.11538461538461,
+      "combined_total": 242.30769230769232,
+      "pace_range": [
+        95.0,
+        121.83999999999999
+      ],
+      "above_league_pace_fraction": 0.7307692307692307,
+      "latest_result": "2026-04-12",
+      "pace_rank": 2,
+      "offense_rank": 24
+    },
+    "MEM": {
+      "games": 29,
+      "recent_games": 17,
+      "pace": 104.52344827586207,
+      "offense_ppp": 1.086705507426151,
+      "defense_ppp": 1.2107496090631371,
+      "points_per_game": 113.58620689655173,
+      "combined_total": 240.13793103448276,
+      "pace_range": [
+        96.68,
+        121.71999999999998
+      ],
+      "above_league_pace_fraction": 0.6896551724137931,
+      "latest_result": "2026-04-12",
+      "pace_rank": 5,
+      "offense_rank": 28
+    },
+    "MIA": {
+      "games": 26,
+      "recent_games": 15,
+      "pace": 104.69,
+      "offense_ppp": 1.1807754763146874,
+      "defense_ppp": 1.1602019148107598,
+      "points_per_game": 123.61538461538461,
+      "combined_total": 245.07692307692307,
+      "pace_range": [
+        96.14,
+        119.86000000000001
+      ],
+      "above_league_pace_fraction": 0.7307692307692307,
+      "latest_result": "2026-04-12",
+      "pace_rank": 3,
+      "offense_rank": 5
+    },
+    "ATL": {
+      "games": 25,
+      "recent_games": 16,
+      "pace": 102.97977358490566,
+      "offense_ppp": 1.1713279950485476,
+      "defense_ppp": 1.0699779505628408,
+      "points_per_game": 121.12,
+      "combined_total": 231.76,
+      "pace_range": [
+        92.83999999999999,
+        111.25999999999999
+      ],
+      "above_league_pace_fraction": 0.64,
+      "latest_result": "2026-04-12",
+      "pace_rank": 10,
+      "offense_rank": 7
+    },
+    "DAL": {
+      "games": 28,
+      "recent_games": 16,
+      "pace": 104.24455525606469,
+      "offense_ppp": 1.0901953847828452,
+      "defense_ppp": 1.180336344835093,
+      "points_per_game": 114.46428571428571,
+      "combined_total": 238.39285714285714,
+      "pace_range": [
+        96.30792452830188,
+        114.12
+      ],
+      "above_league_pace_fraction": 0.6785714285714286,
+      "latest_result": "2026-04-12",
+      "pace_rank": 6,
+      "offense_rank": 25
+    },
+    "MIN": {
+      "games": 26,
+      "recent_games": 16,
+      "pace": 102.69756168359942,
+      "offense_ppp": 1.1094613852226012,
+      "defense_ppp": 1.1098344388154802,
+      "points_per_game": 114.38461538461539,
+      "combined_total": 228.80769230769232,
+      "pace_range": [
+        96.38,
+        112.82
+      ],
+      "above_league_pace_fraction": 0.5769230769230769,
+      "latest_result": "2026-04-12",
+      "pace_rank": 12,
+      "offense_rank": 22
+    },
+    "MIL": {
+      "games": 29,
+      "recent_games": 17,
+      "pace": 99.63103448275862,
+      "offense_ppp": 1.0891911535666077,
+      "defense_ppp": 1.203059564600422,
+      "points_per_game": 108.51724137931035,
+      "combined_total": 228.3793103448276,
+      "pace_range": [
+        90.16000000000001,
+        108.88
+      ],
+      "above_league_pace_fraction": 0.20689655172413793,
+      "latest_result": "2026-04-12",
+      "pace_rank": 25,
+      "offense_rank": 27
+    },
+    "NO": {
+      "games": 26,
+      "recent_games": 15,
+      "pace": 103.89384615384616,
+      "offense_ppp": 1.1313322770283276,
+      "defense_ppp": 1.1472508921828493,
+      "points_per_game": 117.53846153846153,
+      "combined_total": 236.73076923076923,
+      "pace_range": [
+        94.46,
+        121.83999999999999
+      ],
+      "above_league_pace_fraction": 0.6923076923076923,
+      "latest_result": "2026-04-12",
+      "pace_rank": 7,
+      "offense_rank": 15
+    },
+    "BKN": {
+      "games": 28,
+      "recent_games": 16,
+      "pace": 100.36071428571428,
+      "offense_ppp": 1.0305683071776806,
+      "defense_ppp": 1.1750471513469272,
+      "points_per_game": 103.42857142857143,
+      "combined_total": 221.35714285714286,
+      "pace_range": [
+        95.04,
+        111.18
+      ],
+      "above_league_pace_fraction": 0.32142857142857145,
+      "latest_result": "2026-04-12",
+      "pace_rank": 20,
+      "offense_rank": 30
+    },
+    "OKC": {
+      "games": 26,
+      "recent_games": 15,
+      "pace": 101.57557329462989,
+      "offense_ppp": 1.1483070265722077,
+      "defense_ppp": 1.0502670743525984,
+      "points_per_game": 117.57692307692308,
+      "combined_total": 225.1153846153846,
+      "pace_range": [
+        94.09999999999998,
+        109.44
+      ],
+      "above_league_pace_fraction": 0.5384615384615384,
+      "latest_result": "2026-04-12",
+      "pace_rank": 16,
+      "offense_rank": 14
+    },
+    "LAC": {
+      "games": 27,
+      "recent_games": 17,
+      "pace": 99.94251572327043,
+      "offense_ppp": 1.1707673676748582,
+      "defense_ppp": 1.1283081285444234,
+      "points_per_game": 117.44444444444444,
+      "combined_total": 230.62962962962962,
+      "pace_range": [
+        95.02000000000002,
+        106.82
+      ],
+      "above_league_pace_fraction": 0.3333333333333333,
+      "latest_result": "2026-04-12",
+      "pace_rank": 23,
+      "offense_rank": 8
+    },
+    "LAL": {
+      "games": 28,
+      "recent_games": 16,
+      "pace": 99.77570080862534,
+      "offense_ppp": 1.167774418073939,
+      "defense_ppp": 1.1160714285714286,
+      "points_per_game": 116.96428571428571,
+      "combined_total": 228.75,
+      "pace_range": [
+        89.8,
+        110.04
+      ],
+      "above_league_pace_fraction": 0.35714285714285715,
+      "latest_result": "2026-04-12",
+      "pace_rank": 24,
+      "offense_rank": 9
+    },
+    "DEN": {
+      "games": 26,
+      "recent_games": 15,
+      "pace": 102.30291727140784,
+      "offense_ppp": 1.2123275504766415,
+      "defense_ppp": 1.137574752797679,
+      "points_per_game": 126,
+      "combined_total": 244.23076923076923,
+      "pace_range": [
+        94.06,
+        110.92
+      ],
+      "above_league_pace_fraction": 0.5384615384615384,
+      "latest_result": "2026-04-12",
+      "pace_rank": 13,
+      "offense_rank": 1
+    },
+    "POR": {
+      "games": 26,
+      "recent_games": 16,
+      "pace": 102.29015965166909,
+      "offense_ppp": 1.106874232117707,
+      "defense_ppp": 1.0746606334841629,
+      "points_per_game": 113.65384615384616,
+      "combined_total": 224,
+      "pace_range": [
+        95.02000000000002,
+        111.18
+      ],
+      "above_league_pace_fraction": 0.5384615384615384,
+      "latest_result": "2026-04-12",
+      "pace_rank": 14,
+      "offense_rank": 23
+    },
+    "ORL": {
+      "games": 28,
+      "recent_games": 17,
+      "pace": 102.97438702481644,
+      "offense_ppp": 1.1194772569718516,
+      "defense_ppp": 1.110897572292423,
+      "points_per_game": 116.5,
+      "combined_total": 232.10714285714286,
+      "pace_range": [
+        93.89793103448275,
+        112.71999999999998
+      ],
+      "above_league_pace_fraction": 0.5714285714285714,
+      "latest_result": "2026-04-12",
+      "pace_rank": 11,
+      "offense_rank": 16
+    },
+    "PHX": {
+      "games": 26,
+      "recent_games": 16,
+      "pace": 98.54453580901857,
+      "offense_ppp": 1.1190214275754147,
+      "defense_ppp": 1.1000418325767316,
+      "points_per_game": 111.11538461538461,
+      "combined_total": 220.34615384615384,
+      "pace_range": [
+        85.83999999999999,
+        112.71999999999998
+      ],
+      "above_league_pace_fraction": 0.2692307692307692,
+      "latest_result": "2026-04-12",
+      "pace_rank": 27,
+      "offense_rank": 18
+    },
+    "PHI": {
+      "games": 27,
+      "recent_games": 16,
+      "pace": 103.38666666666667,
+      "offense_ppp": 1.1184191671682,
+      "defense_ppp": 1.125225689966469,
+      "points_per_game": 115.62962962962963,
+      "combined_total": 231.96296296296296,
+      "pace_range": [
+        92.96,
+        114.97999999999998
+      ],
+      "above_league_pace_fraction": 0.7407407407407407,
+      "latest_result": "2026-04-12",
+      "pace_rank": 9,
+      "offense_rank": 19
+    },
+    "DET": {
+      "games": 28,
+      "recent_games": 17,
+      "pace": 101.53688679245282,
+      "offense_ppp": 1.1540281392209528,
+      "defense_ppp": 1.0733122729866262,
+      "points_per_game": 118.46428571428571,
+      "combined_total": 228.64285714285714,
+      "pace_range": [
+        92.96,
+        111.08
+      ],
+      "above_league_pace_fraction": 0.39285714285714285,
+      "latest_result": "2026-04-12",
+      "pace_rank": 17,
+      "offense_rank": 13
+    },
+    "CHI": {
+      "games": 26,
+      "recent_games": 16,
+      "pace": 106.99307692307693,
+      "offense_ppp": 1.0789537765172676,
+      "defense_ppp": 1.153080371850515,
+      "points_per_game": 115.88461538461539,
+      "combined_total": 239.73076923076923,
+      "pace_range": [
+        97.74,
+        116.2
+      ],
+      "above_league_pace_fraction": 0.8846153846153846,
+      "latest_result": "2026-04-12",
+      "pace_rank": 1,
+      "offense_rank": 29
+    },
+    "SAC": {
+      "games": 25,
+      "recent_games": 15,
+      "pace": 101.4768,
+      "offense_ppp": 1.1194677009917537,
+      "defense_ppp": 1.196726739510903,
+      "points_per_game": 113.6,
+      "combined_total": 235.04,
+      "pace_range": [
+        95.06,
+        110.66000000000001
+      ],
+      "above_league_pace_fraction": 0.44,
+      "latest_result": "2026-04-12",
+      "pace_rank": 18,
+      "offense_rank": 17
+    },
+    "SA": {
+      "games": 27,
+      "recent_games": 16,
+      "pace": 102.26060097833683,
+      "offense_ppp": 1.2000981439251797,
+      "defense_ppp": 1.080304823485264,
+      "points_per_game": 123.18518518518519,
+      "combined_total": 234.07407407407408,
+      "pace_range": [
+        97.18,
+        110.66000000000001
+      ],
+      "above_league_pace_fraction": 0.4444444444444444,
+      "latest_result": "2026-04-12",
+      "pace_rank": 15,
+      "offense_rank": 2
+    },
+    "HOU": {
+      "games": 28,
+      "recent_games": 17,
+      "pace": 99.46347708894879,
+      "offense_ppp": 1.1650208548714842,
+      "defense_ppp": 1.108694877187979,
+      "points_per_game": 116.71428571428571,
+      "combined_total": 227.78571428571428,
+      "pace_range": [
+        90.04,
+        111.44
+      ],
+      "above_league_pace_fraction": 0.2857142857142857,
+      "latest_result": "2026-04-12",
+      "pace_rank": 26,
+      "offense_rank": 11
+    },
+    "NY": {
+      "games": 26,
+      "recent_games": 15,
+      "pace": 97.06692307692308,
+      "offense_ppp": 1.1677114124275876,
+      "defense_ppp": 1.0904451330168716,
+      "points_per_game": 113.34615384615384,
+      "combined_total": 219.19230769230768,
+      "pace_range": [
+        88.82,
+        103.24000000000001
+      ],
+      "above_league_pace_fraction": 0.11538461538461539,
+      "latest_result": "2026-04-12",
+      "pace_rank": 29,
+      "offense_rank": 10
+    },
+    "TOR": {
+      "games": 26,
+      "recent_games": 17,
+      "pace": 100.57615384615384,
+      "offense_ppp": 1.1594734950171703,
+      "defense_ppp": 1.1063182127587974,
+      "points_per_game": 116.61538461538461,
+      "combined_total": 227.8846153846154,
+      "pace_range": [
+        93.33999999999999,
+        111.12
+      ],
+      "above_league_pace_fraction": 0.38461538461538464,
+      "latest_result": "2026-04-12",
+      "pace_rank": 19,
+      "offense_rank": 12
+    },
+    "GS": {
+      "games": 26,
+      "recent_games": 17,
+      "pace": 100.19386066763425,
+      "offense_ppp": 1.1128896441332432,
+      "defense_ppp": 1.1644755308415327,
+      "points_per_game": 112.84615384615384,
+      "combined_total": 230.92307692307693,
+      "pace_range": [
+        92.40000000000002,
+        107.52000000000002
+      ],
+      "above_league_pace_fraction": 0.4230769230769231,
+      "latest_result": "2026-04-12",
+      "pace_rank": 21,
+      "offense_rank": 20
+    },
+    "BOS": {
+      "games": 27,
+      "recent_games": 16,
+      "pace": 96.93111111111111,
+      "offense_ppp": 1.174182504566053,
+      "defense_ppp": 1.0798046722758432,
+      "points_per_game": 113.81481481481481,
+      "combined_total": 218.4814814814815,
+      "pace_range": [
+        85.83999999999999,
+        107.90000000000002
+      ],
+      "above_league_pace_fraction": 0.1111111111111111,
+      "latest_result": "2026-04-12",
+      "pace_rank": 30,
+      "offense_rank": 6
+    }
+  },
+  "definition": "Estimated possessions per team per 48 minutes: average of FGA + 0.44*FTA - offensive rebounds + total turnovers for both teams, adjusted for overtime. Regular-season sample only; not official NBA tracking pace.",
+  "limitations": "Historical team averages do not account for current rotations or injuries. A fast team does not play fast against every opponent. Public play-by-play can be delayed or corrected."
+}

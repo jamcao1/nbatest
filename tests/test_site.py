@@ -23,7 +23,8 @@ class StaticSiteTests(unittest.TestCase):
             site = root/'nbatest'
             build_site(source, site)
             self.assertEqual({p.name for p in site.iterdir()},
-                             {'index.html','app.js','style.css','weekly.json','weekly.md','backtest.json','.nojekyll'})
+                             {'index.html','app.js','style.css','weekly.json','weekly.md','backtest.json','.nojekyll',
+                              'live.html','live.js','live-model.mjs','pace-priors.json','pace-replay.json','pace-evaluation.json'})
             html = (site/'index.html').read_text()
             self.assertIn('data-mode="published"', html)
             self.assertIn('href="./style.css"', html)

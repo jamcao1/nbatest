@@ -22,7 +22,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Content-Length', str(len(body)))
         self.send_header('Cache-Control', 'no-store')
         self.send_header('X-Content-Type-Options', 'nosniff')
-        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; frame-ancestors 'none'")
+        self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://site.api.espn.com; img-src 'self'; object-src 'none'; frame-ancestors 'none'")
         self.end_headers()
         self.wfile.write(body)
 
@@ -45,8 +45,15 @@ class Handler(BaseHTTPRequestHandler):
                 season = json.loads((ROOT / 'data/season_2015.json').read_text())
                 return self.send(200, backtest(season['games']))
             files = {'/': ('index.html', 'text/html; charset=utf-8'),
+                     '/live.html': ('live.html', 'text/html; charset=utf-8'),
+                     '/live.js': ('live.js', 'text/javascript; charset=utf-8'),
+                     '/live-model.mjs': ('live-model.mjs', 'text/javascript; charset=utf-8'),
                      '/app.js': ('app.js', 'text/javascript; charset=utf-8'),
                      '/style.css': ('style.css', 'text/css; charset=utf-8')}
+            research = {'/pace-priors.json':'pace_priors.json', '/pace-replay.json':'pace_replay.json',
+                        '/pace-evaluation.json':'pace_evaluation.json'}
+            if route.path in research:
+                return self.send(200, (ROOT/'data'/research[route.path]).read_bytes())
             if route.path in files:
                 filename, mime = files[route.path]
                 return self.send(200, (STATIC / filename).read_bytes(), mime)

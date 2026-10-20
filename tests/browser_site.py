@@ -1,5 +1,6 @@
 """Optional static-site check; serve the build at /nbatest/ on port 8001."""
 import json
+import os
 from pathlib import Path
 
 from playwright.sync_api import expect, sync_playwright
@@ -12,7 +13,7 @@ def main():
         errors, requests = [], []
         page.on('pageerror', lambda error: errors.append(str(error)))
         page.on('request', lambda request: requests.append((request.method,request.url)))
-        base = 'http://127.0.0.1:8001/nbatest/'
+        base = os.environ.get('NBATEST_BASE_URL','http://127.0.0.1:8001/nbatest/')
         report = page.request.get(base+'weekly.json').json()
         page.goto(base)
         expect(page.locator('.game-card')).to_have_count(len(report['games']))

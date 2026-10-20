@@ -10,7 +10,7 @@ from .model import backtest
 from .reporting import markdown
 
 
-def build_site(report_path, output, roster_path=None):
+def build_site(report_path, output, roster_path=None, pace_path=None):
     report = json.loads(Path(report_path).read_text())
     if report.get('mode') != 'live public data' or report.get('simulations_per_game') != 1000:
         raise ValueError('The public site requires a live-data report with 1,000 simulations per game.')
@@ -65,6 +65,11 @@ def build_site(report_path, output, roster_path=None):
                  '.nojekyll': ''}
     if roster is not None:
         artifacts['rosters.json'] = json.dumps(roster, indent=2, allow_nan=False) + '\n'
+    for name in ('live.html','live.js','live-model.mjs'):
+        artifacts[name] = (static/name).read_text()
+    artifacts['pace-priors.json'] = Path(pace_path or ROOT/'data/pace_priors.json').read_text()
+    artifacts['pace-replay.json'] = (ROOT/'data/pace_replay.json').read_text()
+    artifacts['pace-evaluation.json'] = (ROOT/'data/pace_evaluation.json').read_text()
     for name, content in artifacts.items():
         (output/name).write_text(content)
     return output
@@ -75,9 +80,10 @@ def main():
     parser.add_argument('--report', type=Path, required=True)
     parser.add_argument('--output', type=Path, default=ROOT/'site')
     parser.add_argument('--rosters', type=Path, help='Optional dated experimental roster context')
+    parser.add_argument('--pace', type=Path, help='Pace priors refreshed from completed games')
     args = parser.parse_args()
     try:
-        output = build_site(args.report, args.output, args.rosters)
+        output = build_site(args.report, args.output, args.rosters, args.pace)
         print(f'Built static website: {output}')
     except (ValueError, OSError) as exc:
         parser.exit(1, f'Error: {exc}\n')

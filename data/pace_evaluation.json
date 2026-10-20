@@ -1,0 +1,73 @@
+{
+  "model_version": "live-pace-v1",
+  "archive_sha256": "076a0dbf6821c3ad87d3f3dda962d0aea481fed61ba3080b261404271d2df7f0",
+  "games": 59,
+  "requested_games": 60,
+  "start": "2026-04-05",
+  "end": "2026-04-12",
+  "excluded": [
+    {
+      "id": "401810999",
+      "reason": "Quarter scores do not reconcile."
+    }
+  ],
+  "metrics": [
+    {
+      "label": "Quarters · 3 min elapsed",
+      "forecasts": 236,
+      "model_mae": 6.161519067796614,
+      "prior_mae": 5.99113653243808,
+      "extrapolation_mae": 10.529661016949152,
+      "coverage80": 0.9067796610169492
+    },
+    {
+      "label": "Quarters · 6 min elapsed",
+      "forecasts": 236,
+      "model_mae": 4.87642372881356,
+      "prior_mae": 4.843311569231886,
+      "extrapolation_mae": 6.419491525423729,
+      "coverage80": 0.8771186440677966
+    },
+    {
+      "label": "Quarters · 9 min elapsed",
+      "forecasts": 236,
+      "model_mae": 3.534099576271188,
+      "prior_mae": 3.5306642950398044,
+      "extrapolation_mae": 3.930790960451979,
+      "coverage80": 0.8728813559322034
+    },
+    {
+      "label": "Full game · 6 min elapsed",
+      "forecasts": 59,
+      "model_mae": 16.872406779661016,
+      "prior_mae": 15.328040704569789,
+      "extrapolation_mae": 30.203389830508474,
+      "coverage80": 0.9491525423728814
+    },
+    {
+      "label": "Full game · 18 min elapsed",
+      "forecasts": 59,
+      "model_mae": 13.824186440677964,
+      "prior_mae": 12.601066220009528,
+      "extrapolation_mae": 17.389830508474578,
+      "coverage80": 0.864406779661017
+    },
+    {
+      "label": "Full game · 30 min elapsed",
+      "forecasts": 59,
+      "model_mae": 10.034042372881354,
+      "prior_mae": 9.96364238396557,
+      "extrapolation_mae": 10.677966101694917,
+      "coverage80": 0.8135593220338984
+    },
+    {
+      "label": "Full game · 42 min elapsed",
+      "forecasts": 59,
+      "model_mae": 5.394322033898303,
+      "prior_mae": 5.683228348860152,
+      "extrapolation_mae": 5.4188861985472165,
+      "coverage80": 0.7966101694915254
+    }
+  ],
+  "note": "Development replay, not an independent prospective test. Errors are mean absolute points. Quarter rows pool all four quarters; repeated checkpoints are correlated. Historical-rate baseline adds expected remaining points to the observed score. Public logs may contain later corrections. No archived in-play odds were available, so betting returns, actual market edges, and live feed latency were not validated."
+}
