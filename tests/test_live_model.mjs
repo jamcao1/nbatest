@@ -18,6 +18,17 @@ test('pregame missing scores and live summary without an official clock are hand
   active.plays=active.plays.filter(p=>game.plays.find(g=>g.id===p.id).t<=360);
   const g=normalizeSummary(active);assert.equal(g.elapsed,g.plays.at(-1).t);assert.equal(g.clockSource,'last_play');
 });
+test('tipoff and intermission statuses normalize without pretending play has elapsed',()=>{
+  const raw=structuredClone(replay.summary),c=raw.header.competitions[0];raw.plays=[];
+  c.status={period:0,type:{state:'in',name:'STATUS_IN_PROGRESS'}};
+  assert.equal(normalizeSummary(raw).elapsed,0);
+  c.status={period:1,displayClock:'12:00',type:{state:'in',name:'STATUS_IN_PROGRESS'}};
+  assert.equal(normalizeSummary(raw).elapsed,0);assert.equal(normalizeSummary(raw).paused,false);
+  c.status={period:2,displayClock:'0.0',type:{state:'in',name:'STATUS_HALFTIME'}};
+  assert.equal(normalizeSummary(raw).elapsed,1440);assert.equal(normalizeSummary(raw).paused,true);
+  c.status={period:2,displayClock:'7:23',type:{state:'in',name:'STATUS_DELAYED',detail:'Delayed'}};
+  assert.equal(normalizeSummary(raw).paused,true);
+});
 test('future participants, plays, and final scores cannot change an earlier projection',()=>{
   const a=project(game,priors,{scope:'q1',elapsed:360});
   const changed=structuredClone(game);changed.home.score=999;changed.away.score=999;

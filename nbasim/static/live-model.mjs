@@ -34,8 +34,9 @@ export function normalizeSummary(raw) {
   if(plays.some(p=>![p.home,p.away,p.seq].every(Number.isFinite)||p.home<0||p.away<0)) throw new Error('Invalid play-by-play scores.');
   let period=Number(status.period||plays.at(-1)?.period||0), elapsed=0;
   if(state==='in') {
-    if(!period) throw new Error('Waiting for the first recorded play.');
-    if(status.displayClock) {
+    if(!period && !plays.length) elapsed=0;
+    else if(!Number.isInteger(period)||period<1) throw new Error('Live period is invalid.');
+    else if(status.displayClock) {
       const clock=seconds(status.displayClock);
       if(clock>periodLength(period)) throw new Error('Live clock exceeds period length.');
       elapsed=periodStart(period)+periodLength(period)-clock;
@@ -48,6 +49,7 @@ export function normalizeSummary(raw) {
     if(estimates.length===2&&estimates.every(Number.isFinite))boxPossessions=average(estimates);
   } catch { /* Unavailable live box scores must not be silently treated as zero. */ }
   return {id:String(raw.header.id),date:c.date,home,away,state,period,elapsed,plays,boxPossessions,clockSource:status.displayClock?'scoreboard':'last_play',
+          paused:/halftime|end.period|end of|delayed|suspended/i.test(`${status.type?.name||''} ${status.type?.detail||''}`),
           status:status.type?.detail||status.type?.description||state};
 }
 

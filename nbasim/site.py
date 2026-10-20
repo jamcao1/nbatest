@@ -1,5 +1,6 @@
 """Build a static dashboard for GitHub Pages from a completed simulation report."""
 import argparse
+import hashlib
 import json
 import math
 from datetime import datetime
@@ -67,6 +68,13 @@ def build_site(report_path, output, roster_path=None, pace_path=None):
         artifacts['rosters.json'] = json.dumps(roster, indent=2, allow_nan=False) + '\n'
     for name in ('live.html','live.js','live-model.mjs'):
         artifacts[name] = (static/name).read_text()
+    # Browsers can cache Pages assets across deployments. Link each live bundle
+    # to its exact contents so refreshed HTML cannot run the previous module.
+    version = lambda content: hashlib.sha256(content.encode()).hexdigest()[:16]
+    artifacts['live.js'] = artifacts['live.js'].replace(
+        "'./live-model.mjs'", f"'./live-model.mjs?v={version(artifacts['live-model.mjs'])}'")
+    artifacts['live.html'] = artifacts['live.html'].replace(
+        'src="./live.js"', f'src="./live.js?v={version(artifacts["live.js"])}"')
     artifacts['pace-priors.json'] = Path(pace_path or ROOT/'data/pace_priors.json').read_text()
     artifacts['pace-replay.json'] = (ROOT/'data/pace_replay.json').read_text()
     artifacts['pace-evaluation.json'] = (ROOT/'data/pace_evaluation.json').read_text()
